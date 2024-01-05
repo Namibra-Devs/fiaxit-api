@@ -2,8 +2,8 @@
 header('Access-Control-Allow-Origin: *');
 header("Content-Type: application/json; charset=UTF-8");
 
-include_once $_SERVER['DOCUMENT_ROOT'].'/api/config/database.php';
-include_once $_SERVER['DOCUMENT_ROOT'].'/api/controllers/pages.php';
+include_once $_SERVER['DOCUMENT_ROOT'].'/app-with-api-main/api/config/database.php';
+include_once $_SERVER['DOCUMENT_ROOT'].'/app-with-api-main/api/controllers/pages.php';
 
 $database = new Database();
 $db = $database->getConnection();
@@ -11,6 +11,9 @@ $db = $database->getConnection();
 $items = new Pages($db);
 
 $stmt = $items->read($_POST['authorization']);
+// print_r ($stmt);
+// exit;
+
 if($stmt):
     $itemCount = $stmt->rowCount();
 
