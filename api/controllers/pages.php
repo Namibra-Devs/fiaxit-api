@@ -45,7 +45,7 @@ class Pages {
         );
         $jwt = JWT::encode($payload, $this->key, 'HS512');
         return array(
-            'token'=>$jwt,
+            'jwt_token'=>$jwt,
             'expires'=>$exp
         );
     }
@@ -68,7 +68,7 @@ class Pages {
     */
     public function signin() {
         try {
-            $query = "SELECT * FROM users WHERE (email = :email OR phone_no = :email)";
+            $query = "SELECT user_id, email, phone_no, password FROM users WHERE (email = :email OR phone_no = :email)";
             
             $stmt = $this->conn->prepare($query);
         
@@ -77,11 +77,12 @@ class Pages {
             $stmt->execute();
         
             if ($stmt->rowCount() > 0) {
-                $user = $stmt->fetch();
+                $user = $stmt->fetch(PDO::FETCH_ASSOC);
         
                 $providedPasswordHash = hash('sha512', $this->password);
-
+    
                 if ($user['password'] === $providedPasswordHash) {
+                    unset($user['password']); // Remove password from user data
                     $user["token"] = $this->auth_token();
                     return [
                         "status" => "2",
@@ -101,14 +102,15 @@ class Pages {
                     "message" => "User does not exist"
                 ];
             }
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
             // Catch database errors
             return [
                 "status" => "error",
-                "message" => "Database error occurred"
+                "message" => "Database error occurred: " . $e->getMessage()
             ];
         }
     }
+    
     
 
 

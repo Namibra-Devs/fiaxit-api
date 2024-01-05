@@ -17,9 +17,6 @@ $item->email = $data->email;
 $item->password = $data->password;
 
 $response = $item->signup();
-// print_r($response);
-// echo $response["status"];
-// exit;
 
 if ($response["status"] === "1"):
     http_response_code(200);
